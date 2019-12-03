@@ -1,0 +1,6 @@
+---
+- name: Restart Dante service
+  service:
+    name: danted
+    state: restarted
+  listen: os:dante_proxy_configfile:changed

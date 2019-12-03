@@ -1,0 +1,13 @@
+---
+- name: Create Users For Dante
+  user:
+    name: "{{ user.name }}"
+    password: "{{ user.password | password_hash('sha512') }}"
+    shell: /bin/false
+    state: present
+    create_home: no
+    update_password: on_create
+  loop: "{{ dante_params.users }}"
+  loop_control:
+      loop_var: user
+  no_log: True

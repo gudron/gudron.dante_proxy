@@ -1,0 +1,39 @@
+logoutput: syslog /var/log/danted.log
+internal: eth0 port = {{ dante_params.port }}
+external: eth0
+
+socksmethod: username
+
+user.privileged: root
+user.notprivileged: nobody
+
+{% for ip in allowed_client_ips %}
+client pass {
+    from: {{ ip }}/32 to: 0.0.0.0/0
+    log: error
+}
+{% endfor %}
+
+client pass {
+    from: 127.0.0.0/8 port 1-65535 to: 0.0.0.0/0
+}
+
+# block everyone else
+client block {
+    from: 0.0.0.0/0 to: 0.0.0.0/0
+    log: connect error
+}
+
+{% for ip in allowed_client_ips %}
+socks pass {
+    from: {{ ip }}/0 to: 0.0.0.0/0
+    command: bind connect udpassociate
+    log: error # connect disconnect iooperation
+}
+{% endfor %}
+
+socks block {
+    from: 0.0.0.0/0 to: 127.0.0.0/8
+    command: bindreply udpreply
+    log: connect error
+}

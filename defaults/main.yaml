@@ -1,0 +1,6 @@
+allowed_connect_ips: []
+dante_params:
+  port: 1085
+  users:
+    - name: example_user
+    - password: example_pass

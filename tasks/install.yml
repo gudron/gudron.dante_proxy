@@ -1,0 +1,8 @@
+---
+- name: Install Dante proxy and depending packages
+  package:
+    name: "{{ package_name }}"
+    state: present
+  loop: "{{ packages }}"
+  loop_control:
+    loop_var: package_name

@@ -1,0 +1,5 @@
+---
+add_repository_module: apt_repository
+
+packages: 
+  - dante-server

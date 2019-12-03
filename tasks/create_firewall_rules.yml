@@ -1,0 +1,49 @@
+---
+- iptables:
+    chain: INPUT
+    protocol: tcp
+    source: "{{ client_ip }}"
+    source_port: "1024:65535"
+    destination: "{{ ansible_default_ipv4.address }}"
+    destination_port: "{{ dante_params.port }}"
+    ctstate: NEW,ESTABLISHED
+    jump: ACCEPT
+    comment: Accept new input connections to proxy.
+  become: yes
+  loop: "{{ allowed_connect_ips }}"
+  loop_control:
+      loop_var: client_ip
+  no_log: True
+
+- iptables:
+    chain: OUTPUT
+    protocol: tcp
+    source: "{{ ansible_default_ipv4.address }}"
+    source_port: "{{ dante_params.port }}"
+    destination: "{{ client_ip }}"
+    destination_port: "1024:65535"
+    ctstate: ESTABLISHED
+    jump: ACCEPT
+    comment: Accept new output connections to proxy.
+  become: yes
+  loop: "{{ allowed_connect_ips }}"
+  loop_control:
+      loop_var: client_ip
+  no_log: True
+
+- iptables:
+    chain: INPUT
+    protocol: tcp
+    source: "0/0"
+    source_port: "1024:65535"
+    destination: "{{ ansible_default_ipv4.address }}"
+    destination_port: "{{ dante_params.port }}"
+    ctstate: NEW,ESTABLISHED
+    jump: DROP
+    comment: Drop connections from other ips
+  become: yes
+  loop: "{{ allowed_connect_ips }}"
+  loop_control:
+      loop_var: client_ip
+  no_log: True
+

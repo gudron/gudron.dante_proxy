@@ -1,0 +1,10 @@
+---
+- name: Configure Dante Proxy Server
+  template:
+    src: ./templates/etc/danted.conf.j2
+    dest: /etc/danted.conf
+    owner: root
+    group: bin
+    mode: "u=rw,g=r,o=r"
+  notify:
+    - "os:dante_proxy_configfile:changed"
